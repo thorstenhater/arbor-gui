@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <filesystem>
+#include <deque>
 
 #include <arbor/cable_cell.hpp>
 #include <arbor/morph/place_pwlin.hpp>
