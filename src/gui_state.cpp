@@ -363,13 +363,13 @@ void gui_dir_view(file_chooser_state& state) {
         std::sort(dirnames.begin(), dirnames.end());
 
         for (const auto& [dn, path]: dirnames) {
-                auto lbl = fmt::format("{} {}", (const char *) ICON_FK_FOLDER, dn);
-                ImGui::Selectable(lbl.c_str(), false);
-                if (ImGui::IsItemHovered() && ImGui::IsMouseDoubleClicked(0)) {
-                    state.cwd = path;
-                    state.file.clear();
-                }
+            auto lbl = fmt::format("{} {}", (const char *) ICON_FK_FOLDER, dn);
+            ImGui::Selectable(lbl.c_str(), false);
+            if (ImGui::IsItemHovered() && (ImGui::IsMouseDoubleClicked(0) || ImGui::IsKeyPressed(GLFW_KEY_SPACE))) {
+                state.cwd = path;
+                state.file.clear();
             }
+        }
         for (const auto& [fn, path]: filenames) {
             if (ImGui::Selectable(fn.c_str(), path == state.file)) state.file = path;
         }
