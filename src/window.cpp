@@ -137,10 +137,14 @@ Window::Window() {
     log_debug("Setting icon");
     GLFWimage images[1];
     images[0].pixels = stbi_load((base / "arbor.png").c_str(), &images[0].width, &images[0].height, 0, 4); //rgba channels
-    try {
-        glfwSetWindowIcon(handle, 1, images);
-    } catch(...) {
-        log_info("Setting icon failed, possibly on OS X?");
+    if (images[0].pixels != NULL) {
+        try {
+            glfwSetWindowIcon(handle, 1, images);
+        } catch(...) {
+            log_warn("Setting icon failed, possibly on OS X?");
+        }
+    } else {
+        log_warn("Setting icon not possible, image not found.");
     }
     stbi_image_free(images[0].pixels);
 }
