@@ -29,6 +29,7 @@ void gui_state::reset() {
   detectors.clear();
   ion_defaults.clear();
   mechanisms.clear();
+  segment_to_regions.clear();
 
   static std::vector<std::pair<std::string, int>> species{{"na", 1}, {"k", 1}, {"ca", 2}};
   for (const auto &[k, v]: species) add_ion(k, v);
@@ -36,7 +37,7 @@ void gui_state::reset() {
 
 void gui_state::reload(const io::loaded_morphology& result) {
   reset();
-  builder  = cell_builder{result.morph};
+  builder = cell_builder{result.morph};
   renderer.load_geometry(result.morph);
   for (const auto& [k, v]: result.regions) add_region(k, v);
   for (const auto& [k, v]: result.locsets) add_locset(k, v);
@@ -57,6 +58,7 @@ void gui_state::update() {
     void operator()(const evt_upd_locdef<ls_def>& c) {
       auto& def = state->locset_defs[c.id];
       auto& rnd = state->render_locsets[c.id];
+      def.update();
       if (def.state != def_state::good) return;
       log_info("Making markers for locset {} '{}'", def.name, def.definition);
       try {
@@ -90,9 +92,9 @@ void gui_state::update() {
       if (def.state == def_state::good) {
         log_info("Making frustrums for region {} '{}'", def.name, def.definition);
         try {
-          auto points = state->builder.make_segments(def.data.value());
-          for (const auto& point: points) state->segment_to_regions[point.id].insert(c.id);
-          state->renderer.make_region(points, rnd);
+          auto ids = state->builder.make_segments(def.data.value());
+          for (const auto& id: ids) state->segment_to_regions[id].insert(c.id);
+          state->renderer.make_region(ids, rnd);
         } catch (arb::morphology_error &e) {
           def.set_error(e.what()); rnd.active = false;
         }
@@ -168,6 +170,8 @@ struct with_indent {
   ~with_indent() { ImGui::Unindent(px); }
   float px;
 };
+
+with_indent gui_tree_indent() { ImGui::Unindent(); return {ImGui::GetTreeNodeToLabelSpacing()}; } // fix alignment under trees
 
 struct with_style {
   template<typename V> with_style(ImGuiStyleVar var, V val) { ImGui::PushStyleVar(var, val); }
@@ -422,11 +426,10 @@ void gui_read_morphology(gui_state &state, bool &open_file) {
         }
         ImGui::EndCombo();
       }
-      if (flavors) {
-        auto fs = flavors.value();
-        if (fs.end() == std::find(fs.begin(), fs.end(), flavor)) flavor = fs.front();
+      if (!flavors.empty()) {
+        if (flavors.end() == std::find(flavors.begin(), flavors.end(), flavor)) flavor = flavors.front();
         ImGui::SameLine();
-        gui_choose("Flavor", flavor, fs);
+        gui_choose("Flavor", flavor, flavors);
       } else {
         flavor = "";
       }
@@ -496,8 +499,9 @@ void gui_cell(gui_state &state) {
       ImGui::Text("%s Camera", icon_camera);
       {
         with_indent indent{};
-        if (gui_menu_item("Reset", icon_refresh)) {
-          state.view.offset = {0.0, 0.0};
+        if (gui_menu_item("Reset##camera", icon_refresh)) {
+          state.view.offset = {0.0f, 0.0f};
+          state.view.phi    = 0.0f;
           state.view.target = {0.0f, 0.0f, 0.0f};
         }
         if (ImGui::BeginMenu(fmt::format("{} Snap", icon_locset).c_str())) {
@@ -519,6 +523,17 @@ void gui_cell(gui_state &state) {
           ImGui::EndMenu();
         }
       }
+      ImGui::Separator();
+      ImGui::Text("%s Model", icon_cell);
+      {
+        with_indent indent{};
+        if (gui_menu_item("Reset##model", icon_refresh)) {
+          state.view.theta = 0.0f;
+          state.view.gamma = 0.0f;
+        }
+        ImGui::SliderFloat("Theta", &state.view.theta, -PI, PI);
+        ImGui::SliderFloat("Gamma", &state.view.gamma, -PI, PI);
+      }
       ImGui::EndPopup();
     }
     ImGui::EndChild();
@@ -531,14 +546,17 @@ void gui_cell_info(gui_state& state) {
     ImGui::Text("%s Selection", icon_branch);
     if (state.object) {
       auto id = state.object.value();
-      with_indent indent{};
       ImGui::Text("Segment: %6zu", id.segment);
       ImGui::Text("Branch:  %6zu", id.branch);
       ImGui::Text("In Regions");
-      for (const auto& region: state.segment_to_regions[id.segment]) {
-        ImGui::BulletText("%s", state.region_defs[region].name.c_str());
-        ImGui::SameLine();
-        ImGui::ColorButton("", to_imvec(state.render_regions[region].color));
+      {
+        with_indent indent{};
+        for (const auto& region: state.segment_to_regions[id.segment]) {
+          ImGui::ColorButton("", to_imvec(state.render_regions[region].color));
+          ImGui::SameLine();
+          ImGui::AlignTextToFramePadding();
+          ImGui::Text("%s", state.region_defs[region].name.c_str());
+        }
       }
     }
   }
@@ -556,7 +574,7 @@ void gui_locdefs(const std::string& name,
   if (open) {
     with_item_width iw(120.0f);
     for (const auto& id: ids) {
-      with_id guard{id.value};
+      with_id guard{id};
       auto& render = renderables[id];
       auto& item   = items[id];
       auto open = gui_tree("");
@@ -569,6 +587,7 @@ void gui_locdefs(const std::string& name,
       gui_right_margin();
       if (ImGui::Button(icon_delete)) events.push_back(evt_del_locdef<Item>{id});
       if (open) {
+        auto indent = gui_tree_indent();
         if (ImGui::InputText("Definition", &item.definition)) events.push_back(evt_upd_locdef<Item>{id});
         ImGui::SameLine();
         gui_check_state(item);
@@ -636,6 +655,7 @@ void gui_ion_defaults(gui_state& state) {
       gui_right_margin();
       if (ImGui::Button(icon_delete)) state.remove_ion(ion);
       if (open) {
+        auto indent = gui_tree_indent();
         auto& defaults = state.ion_defaults[ion];
         ImGui::InputInt("Charge", &definition.charge);
         gui_input_double("Int. Concentration", defaults.Xi, "mM");
@@ -774,7 +794,7 @@ bool gui_measurement(probe_def& data) {
   gui_input_double("Frequency", data.frequency, "Hz");
   gui_right_margin();
   auto remove = ImGui::Button(icon_delete);
-  with_indent indent{};
+  with_indent indent{ImGui::GetTreeNodeToLabelSpacing()};
   gui_choose("Variable", data.variable, probe_def::variables);
   return remove;
 }
