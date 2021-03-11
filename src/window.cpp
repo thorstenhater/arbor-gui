@@ -133,20 +133,6 @@ Window::Window() {
         io.Fonts->AddFontFromFileTTF(path.c_str(), 16.0f, &icons_config, icons_ranges);
     }
     log_debug("Set up fonts");
-
-    log_debug("Setting icon");
-    GLFWimage images[1];
-    images[0].pixels = stbi_load((base / "arbor.png").c_str(), &images[0].width, &images[0].height, 0, 4); //rgba channels
-    if (images[0].pixels != NULL) {
-        try {
-            glfwSetWindowIcon(handle, 1, images);
-        } catch(...) {
-            log_warn("Setting icon failed, possibly on OS X?");
-        }
-    } else {
-        log_warn("Setting icon not possible, image not found.");
-    }
-    stbi_image_free(images[0].pixels);
 }
 
 Window::~Window() {
