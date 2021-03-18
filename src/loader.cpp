@@ -40,16 +40,16 @@ loaded_morphology load_neuroml(const std::filesystem::path &fn) {
     auto id         = nml.cell_ids().front();
     auto morph_data = nml.cell_morphology(id).value();
     loaded_morphology result{.morph=morph_data.morphology};
-    for (const auto &[k, v]: morph_data.groups.regions()) result.regions.emplace_back(k, to_string(v));
-    for (const auto &[k, v]: morph_data.groups.locsets()) result.locsets.emplace_back(k, to_string(v));
+    for (const auto& [k, v]: morph_data.groups.regions()) result.regions.emplace_back(k, to_string(v));
+    for (const auto& [k, v]: morph_data.groups.locsets()) result.locsets.emplace_back(k, to_string(v));
     return result;
 }
 
 loaded_morphology load_asc(const std::filesystem::path &fn) {
     auto m = arborio::load_asc(fn);
     loaded_morphology result{.morph=m.morphology};
-    for (const auto &[k, v]: m.labels.regions()) result.regions.emplace_back(k, to_string(v));
-    for (const auto &[k, v]: m.labels.locsets()) result.locsets.emplace_back(k, to_string(v));
+    for (const auto& [k, v]: m.labels.regions()) result.regions.emplace_back(k, to_string(v));
+    for (const auto& [k, v]: m.labels.locsets()) result.locsets.emplace_back(k, to_string(v));
     return result;
 }
 
