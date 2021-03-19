@@ -144,7 +144,6 @@ namespace {
     gui_tooltip(def.message);
   }
 
-
   inline bool gui_toggle(const char *on, const char *off, bool &flag) { if (ImGui::Button(flag ? on : off)) {flag = !flag; return true; } return false; }
 
   inline bool gui_menu_item(const char* text, const char* icon) { return ImGui::MenuItem(fmt::format("{} {}", icon, text).c_str()); }
@@ -197,9 +196,7 @@ namespace {
     }
     ImGui::EndMainMenuBar();
     //KeyCTRL should map to CMD on macos
-    if (ImGui::IsKeyPressed('O') && ImGui::GetIO().KeyCtrl) {
-      gui_read_morphology(state, open_morph_read);
-    }
+    if (ImGui::IsKeyPressed('O') && ImGui::GetIO().KeyCtrl) open_morph_read = true;
     if (open_morph_read) gui_read_morphology(state, open_morph_read);
     if (open_decor_read) gui_read_decoration(state, open_decor_read);
     if (open_decor_save) gui_save_decoration(state, open_decor_save);
