@@ -148,6 +148,7 @@ namespace {
   inline bool gui_toggle(const char *on, const char *off, bool &flag) { if (ImGui::Button(flag ? on : off)) {flag = !flag; return true; } return false; }
 
   inline bool gui_menu_item(const char* text, const char* icon) { return ImGui::MenuItem(fmt::format("{} {}", icon, text).c_str()); }
+  inline bool gui_menu_item(const char* text, const char* hotkey, const char* icon) { return ImGui::MenuItem(fmt::format("{} {}", icon, text).c_str(), hotkey); }
 
   inline void gui_save_decoration(gui_state &state, bool &open) {
     state.serialize("test");
@@ -171,7 +172,11 @@ namespace {
       ImGui::Text("%s Morphology", icon_branch);
       {
         with_indent indent;
-        open_morph_read = gui_menu_item("Load", icon_load);
+        #ifdef __APPLE__
+        open_morph_read = gui_menu_item("Load", "CMD+O", icon_load);
+        #else
+        open_morph_read = gui_menu_item("Load", "CTRL+O", icon_load);
+        #endif
       }
       ImGui::Separator();
       ImGui::Text("%s Cable cell", icon_cell);
@@ -191,6 +196,14 @@ namespace {
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
+    #ifdef __APPLE__
+    if (ImGui::IsKeyPressed('o') && ImGui::IsKeyPressed(ImGuiModKey_Cmd)
+    #else
+    if (ImGui::IsKeyPressed('O') && ImGui::GetIO().KeyCtrl)
+    #endif
+    {
+      gui_read_morphology(state, open_morph_read);
+    }
     if (open_morph_read) gui_read_morphology(state, open_morph_read);
     if (open_decor_read) gui_read_decoration(state, open_decor_read);
     if (open_decor_save) gui_save_decoration(state, open_decor_save);
