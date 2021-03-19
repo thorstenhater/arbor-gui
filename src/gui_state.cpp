@@ -196,12 +196,8 @@ namespace {
       ImGui::EndMenu();
     }
     ImGui::EndMainMenuBar();
-    #ifdef __APPLE__
-    if (ImGui::IsKeyPressed('o') && ImGui::IsKeyPressed(ImGuiModKey_Cmd)
-    #else
-    if (ImGui::IsKeyPressed('O') && ImGui::GetIO().KeyCtrl)
-    #endif
-    {
+    //KeyCTRL should map to CMD on macos
+    if (ImGui::IsKeyPressed('O') && ImGui::GetIO().KeyCtrl) {
       gui_read_morphology(state, open_morph_read);
     }
     if (open_morph_read) gui_read_morphology(state, open_morph_read);
