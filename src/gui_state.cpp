@@ -27,6 +27,7 @@ extern float delta_zoom;
 extern float mouse_x;
 extern float mouse_y;
 extern glm::vec2 delta_pos;
+float gui_state_zoom = 0.0f;
 
 namespace {
   inline void gui_read_morphology(gui_state& state, bool& open);
@@ -330,6 +331,7 @@ namespace {
       if (ImGui::IsItemHovered()) {
         state.view.offset -= delta_pos;
         state.view.zoom    = std::clamp(state.view.zoom + delta_zoom, 1.0f, 45.0f);
+        gui_state_zoom     = state.view.zoom;
         state.view.phi     = std::fmod(state.view.phi   + delta_phi   + 2*PI, 2*PI); // cyclic in [0, 2pi)
         state.view.gamma   = std::fmod(state.view.gamma + delta_gamma + 2*PI, 2*PI); // cyclic in [0, 2pi)
       }
