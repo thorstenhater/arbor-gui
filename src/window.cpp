@@ -40,11 +40,11 @@ static void mouse_callback(GLFWwindow* window, double x, double y) {
     }
 
     if (lb_down && !ctrl_key) {
-        delta_phi = ((dx > eps) - (dx < eps))*0.1f;
+        delta_phi = 0.05f * dx;
     }
 
     if (mb_down && !ctrl_key) {
-        delta_gamma = ((dy > eps) - (dy < eps))*0.1f;
+        delta_gamma = 0.05f * dy;
     }
 }
 
