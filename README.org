@@ -115,7 +115,7 @@ for `g++`) and manually select the right number.
 
 #+begin_example bash
 cmake ..
-sudo make install -j
+sudo make install -j 4
 #+end_example
 
 *** WSL2
