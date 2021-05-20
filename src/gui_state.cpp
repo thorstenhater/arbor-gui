@@ -45,7 +45,7 @@ namespace {
     ZoneScopedN(__FUNCTION__);
     with_id id{"writing acc"};
     ImGui::OpenPopup("Save");
-    static std::vector<std::string> suffixes{"acc"};
+    static std::vector<std::string> suffixes{".acc"};
     if (ImGui::BeginPopupModal("Save")) {
       gui_dir_view(state.acc_chooser);
       {
@@ -77,10 +77,10 @@ namespace {
 
   inline void gui_read_acc(gui_state& state, bool& open) {
     ZoneScopedN(__FUNCTION__);
-    with_id id{"writing acc"};
-    ImGui::OpenPopup("Save");
-    static std::vector<std::string> suffixes{"acc"};
-    if (ImGui::BeginPopupModal("Save")) {
+    with_id id{"reading acc"};
+    ImGui::OpenPopup("Open");
+    static std::vector<std::string> suffixes{".acc"};
+    if (ImGui::BeginPopupModal("Open")) {
       gui_dir_view(state.acc_chooser);
       {
         with_item_width id{120.0f};
