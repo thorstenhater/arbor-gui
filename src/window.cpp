@@ -1,5 +1,6 @@
 #include "window.hpp"
-
+#include "utils.hpp"
+#include <math.h>
 #include <filesystem>
 
 #define STB_IMAGE_IMPLEMENTATION
@@ -10,10 +11,11 @@ static void glfw_error_callback(int error, const char* description) {
     log_error("Glfw error {}:\n{}", error, description);
 }
 
-float delta_phi     = 0.0f;
-float delta_gamma     = 0.0f;
-float delta_zoom    = 0.0f;
 glm::vec2 delta_pos = {0.0f, 0.0f};
+float delta_phi     = 0.0f;
+float delta_gamma   = 0.0f;
+float delta_zoom    = 0.0f;
+extern float gui_state_zoom;
 
 float mouse_x;
 float mouse_y;
@@ -35,16 +37,16 @@ static void mouse_callback(GLFWwindow* window, double x, double y) {
     auto dy = mouse_y - y; mouse_y = y;
 
     if (lb_down && ctrl_key) {
-        delta_pos.x = (std::abs(dx) > eps) ? -dx*2 : 0.0f;
-        delta_pos.y = (std::abs(dy) > eps) ?  dy*2 : 0.0f;
+        delta_pos.x = - dx * pow(gui_state_zoom, 1.2) / 12;
+        delta_pos.y = dy * pow(gui_state_zoom, 1.2) / 12;
     }
 
     if (lb_down && !ctrl_key) {
-        delta_phi = ((dx > eps) - (dx < eps))*0.1f;
+        delta_phi = 0.05f * dx;
     }
 
     if (mb_down && !ctrl_key) {
-        delta_gamma = ((dy > eps) - (dy < eps))*0.1f;
+        delta_gamma = 0.05f * dy;
     }
 }
 
