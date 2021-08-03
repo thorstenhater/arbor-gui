@@ -25,7 +25,7 @@ AppDir:
     - libxau6
     - libxcb-render-util0
     - libxcb-sync1
-    - libxcb-xinerama0
+    - libxinerama-dev
     - libxcb-xkb1
     - libxdamage1
     - libxdmcp6
