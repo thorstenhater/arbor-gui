@@ -4,9 +4,9 @@ AppDir:
   app_info:
     id: arbor-gui
     name: Arbor GUI
-    icon: usr/etc/arbor-gui/arbor.png
+    icon: /usr/etc/arbor-gui/arbor.png
     version: latest
-    exec: usr/bin/arbor-gui
+    exec: /usr/bin/arbor-gui
     exec_args: $@
   apt:
     arch: amd64
