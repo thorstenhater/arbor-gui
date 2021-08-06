@@ -1,10 +1,12 @@
 version: 1
+script:
+  - sh AppDir
 AppDir:
   path: AppDir
   app_info:
     id: arbor-gui
     name: Arbor GUI
-    icon: arbor.png
+    icon: 'arbor'
     version: latest
     exec: usr/bin/arbor-gui
     exec_args: $@

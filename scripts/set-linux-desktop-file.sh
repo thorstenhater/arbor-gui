@@ -3,8 +3,8 @@ respath=$1
 iconpng=$2
 iconsvg=$3
 desktop=$4
-mkdir -p $respath
-cp $iconpng $respath
+# mkdir -p $respath
+# cp $iconpng $respath
 userid=$(id -u)
 if [ $userid -eq 0 ]
   then
@@ -14,8 +14,8 @@ if [ $userid -eq 0 ]
   mkdir -p /usr/share/icons/hicolor/256x256/apps/
   cp $iconpng /usr/share/icons/hicolor/256x256/apps/
   cp $iconsvg /usr/share/icons/hicolor/scalable/apps/
-  cp $iconpng /usr/share/icons/
-  cp $iconsvg /usr/share/icons/
+#   cp $iconpng /usr/share/icons/
+#   cp $iconsvg /usr/share/icons/
   exit
 else
   mkdir -p ~/.local/share/applications/
@@ -24,7 +24,7 @@ else
   mkdir -p ~/.local/share/icons/hicolor/256x256/apps/
   cp $iconpng ~/.local/share/icons/hicolor/256x256/apps/
   cp $iconsvg ~/.local/share/icons/hicolor/scalable/apps/
-  cp $iconpng ~/.local/share/icons/
-  cp $iconsvg ~/.local/share/icons/
+#   cp $iconpng ~/.local/share/icons/
+#   cp $iconsvg ~/.local/share/icons/
   exit
 fi
