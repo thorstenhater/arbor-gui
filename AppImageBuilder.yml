@@ -10,6 +10,9 @@ AppDir:
     version: latest
     exec: usr/bin/arbor-gui
     exec_args: $@
+  runtime:
+    env:
+      MESA_GL_VERSION_OVERRIDE: 3.3
   apt:
     arch: amd64
     sources:
