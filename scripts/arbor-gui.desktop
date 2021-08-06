@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Arbor GUI
 Comment=Design cable cells for Arbor
-Exec=arbor-gui
+Exec=MESA_GL_VERSION_OVERRIDE=3.3 arbor-gui
 Icon=arbor
 Terminal=false
 Type=Application

@@ -14,6 +14,8 @@ if [ $userid -eq 0 ]
   mkdir -p /usr/share/icons/hicolor/256x256/apps/
   cp $iconpng /usr/share/icons/hicolor/256x256/apps/
   cp $iconsvg /usr/share/icons/hicolor/scalable/apps/
+  cp $iconpng /usr/share/icons/
+  cp $iconsvg /usr/share/icons/
   exit
 else
   mkdir -p ~/.local/share/applications/
@@ -22,5 +24,7 @@ else
   mkdir -p ~/.local/share/icons/hicolor/256x256/apps/
   cp $iconpng ~/.local/share/icons/hicolor/256x256/apps/
   cp $iconsvg ~/.local/share/icons/hicolor/scalable/apps/
+  cp $iconpng ~/.local/share/icons/hicolor/
+  cp $iconsvg ~/.local/share/icons/hicolor/
   exit
 fi
