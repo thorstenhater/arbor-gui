@@ -24,7 +24,7 @@ else
   mkdir -p ~/.local/share/icons/hicolor/256x256/apps/
   cp $iconpng ~/.local/share/icons/hicolor/256x256/apps/
   cp $iconsvg ~/.local/share/icons/hicolor/scalable/apps/
-  cp $iconpng ~/.local/share/icons/hicolor/
-  cp $iconsvg ~/.local/share/icons/hicolor/
+  cp $iconpng ~/.local/share/icons/
+  cp $iconsvg ~/.local/share/icons/
   exit
 fi
