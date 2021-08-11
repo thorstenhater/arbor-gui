@@ -8,7 +8,7 @@ AppDir:
     name: Arbor GUI
     icon: 'arbor'
     version: latest
-    exec: arbor-gui
+    exec: usr/bin/arbor-gui
     exec_args: $@
   runtime:
     env:
