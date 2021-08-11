@@ -16,6 +16,7 @@ jobs:
     steps:
       - name: install dependencies
         run: |
+          arch
           apt update
           apt install -y software-properties-common
           add-apt-repository ppa:ubuntu-toolchain-r/test
@@ -27,9 +28,9 @@ jobs:
         with:
           submodules: "recursive"
       - name: Configure
-        run: cmake -S . -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
+        run: cmake -S . -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=AppDir
       - name: build
-        run: make -j4  install DESTDIR=AppDir
+        run: make -j4 install
       - name: pack
         run: |
           export export UPDATE_INFO="gh-releases-zsync|brenthuisman|arbor-gui|latest|*.AppImage.zsync"
