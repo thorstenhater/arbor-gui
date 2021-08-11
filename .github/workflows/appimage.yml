@@ -28,9 +28,9 @@ jobs:
         with:
           submodules: "recursive"
       - name: Configure
-        run: cmake -S . -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=AppDir
+        run: cmake -S . -DCMAKE_CXX_COMPILER=g++-10 -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr
       - name: build
-        run: make -j4 install
+        run: make -j4 install DESTDIR=AppDir
       - name: pack
         run: |
           export export UPDATE_INFO="gh-releases-zsync|brenthuisman|arbor-gui|latest|*.AppImage.zsync"
