@@ -46,7 +46,7 @@ namespace {
   inline void gui_demo(bool&);
 
   inline void gui_save_acc(gui_state& state, bool& open) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id id{"writing acc"};
     ImGui::OpenPopup("Save");
     static std::vector<std::string> suffixes{".acc"};
@@ -80,7 +80,7 @@ namespace {
   }
 
   inline void gui_read_acc(gui_state& state, bool& open) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id id{"reading acc"};
     ImGui::OpenPopup("Load");
     static std::vector<std::string> suffixes{".acc"};
@@ -133,7 +133,7 @@ namespace {
   }
 
   inline void gui_read_cat(gui_state& state, bool& open) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id id{"loading cat"};
     ImGui::OpenPopup("Load");
     static std::vector<std::string> suffixes{".so"};
@@ -198,7 +198,7 @@ namespace {
   }
 
   inline void gui_menu_bar(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     ImGui::BeginMainMenuBar();
     if (ImGui::BeginMenu("File")) {
       ImGui::Text("%s Morphology", icon_branch);
@@ -245,7 +245,7 @@ namespace {
   }
 
   inline void gui_main(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     static bool opt_fullscreen = true;
     static bool opt_padding = false;
     static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
@@ -348,7 +348,7 @@ namespace {
   }
 
   inline void gui_read_morphology(gui_state& state, bool& open_file) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id id{"reading morphology"};
     ImGui::OpenPopup("Open");
     if (ImGui::BeginPopupModal("Open")) {
@@ -429,7 +429,7 @@ namespace {
   }
 
   inline void gui_cell(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin("Cell")) {
       ImGui::BeginChild("Cell Render");
       auto size = ImGui::GetWindowSize(), win_pos = ImGui::GetWindowPos();
@@ -504,7 +504,7 @@ namespace {
   }
 
   inline void gui_cell_info(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin("Info")) {
       ImGui::Text("%s Selection", icon_branch);
       if (state.object) {
@@ -557,7 +557,7 @@ namespace {
                           component_unique<Item>& items,
                           component_unique<renderable>& renderables,
                           event_queue& events) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id guard{name};
     auto from = -1, to = -1;
     auto open = gui_tree_add(name, [&](){ events.emplace_back(evt_add_locdef<Item>{}); });
@@ -633,7 +633,7 @@ namespace {
   }
 
   inline void gui_locations(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin(fmt::format("{} Locations", icon_location).c_str())) {
       gui_locdefs(fmt::format("{} Regions", icon_region), state.regions, state.region_defs, state.renderer.regions, state.events);
       ImGui::Separator();
@@ -643,7 +643,7 @@ namespace {
   }
 
   inline void gui_ion_settings(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id guard{"ion-settings"};
     if (gui_tree(fmt::format("{} Regions", icon_region))) {
       for (const auto& region: state.regions) {
@@ -660,7 +660,7 @@ namespace {
   }
 
   inline void gui_ion_defaults(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id guard{"ion-defaults"};
     auto open = gui_tree_add(fmt::format("{} Default", icon_default), [&]() { state.add_ion(); });
     if (open) {
@@ -690,7 +690,7 @@ namespace {
   }
 
   inline void gui_parameters(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     with_id id{"parameters"};
     if (ImGui::Begin(fmt::format("{} Parameters", icon_list).c_str())) {
       if (gui_tree(fmt::format("{} Cable Cell Properties", icon_sliders))) {
@@ -725,7 +725,6 @@ namespace {
   }
 
   inline void gui_probes(gui_state& state) {
-    static std::optional<id_type> open_trace = {};
     auto open = gui_tree(fmt::format("{} Probes", icon_probe));
     if (open) {
       // Ion names
@@ -752,37 +751,11 @@ namespace {
         if (open) {
           for (const auto& probe: state.probes.get_children(locset)) {
             gui_probe(probe, state.probes[probe], state.events, ion_names, state_vars);
-            if (state.sim.traces.contains(probe)) {
-              with_indent indent{ImGui::GetTreeNodeToLabelSpacing()};
-              if (ImGui::Button("Show Trace")) open_trace = probe;
-            }
           }
           ImGui::TreePop();
         }
       }
       ImGui::TreePop();
-    }
-
-    if (open_trace) ImGui::OpenPopup("Trace");
-    if (ImGui::BeginPopupModal("Trace")) {
-      auto id    = open_trace.value();
-      auto trace = state.sim.traces.at(id);
-      auto probe = state.probes[id];
-      auto var   = fmt::format("{} {}", probe.kind, probe.variable);
-      if (trace.values.empty()) {
-        ImGui::Text("Empty trace");
-      } else {
-        if (ImPlot::BeginPlot(fmt::format("Probe {} @ branch {} ({})", id.value, trace.branch, trace.location).c_str(),
-                              "Time (ms)", var.c_str())) {
-          ImPlot::PlotLine(var.c_str(), trace.times.data(), trace.values.data(), trace.values.size());
-          ImPlot::EndPlot();
-        }
-      }
-      if (ImGui::Button("Close")) {
-        open_trace = {};
-        ImGui::CloseCurrentPopup();
-      }
-      ImGui::EndPopup();
     }
   }
 
@@ -804,16 +777,16 @@ namespace {
     }
   }
 
-  inline void gui_debug(bool& open) { ZoneScopedN(__FUNCTION__); ImGui::ShowMetricsWindow(&open); }
+  inline void gui_debug(bool& open) {  ImGui::ShowMetricsWindow(&open); }
 
   inline void gui_style(bool& open) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin("Style", &open)) ImGui::ShowStyleEditor();
     ImGui::End();
   }
 
   inline void gui_about(bool& open) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin("About", &open)) {
       ImGui::Text("Version: %s", gui_git_commit);
       ImGui::Text("Webpage: %s", gui_web_page);
@@ -824,35 +797,23 @@ namespace {
 
 
   inline void gui_demo(bool& open) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin("Demo", &open)) ImGui::ShowDemoWindow();
     ImGui::End();
   }
 
   inline void gui_stimuli(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
+    std::vector<float> values(state.sim.until/state.sim.dt, 0.0f);
     if (gui_tree(fmt::format("{} Stimuli", icon_stimulus))) {
       for (const auto& locset: state.locsets) {
         with_id id{locset};
         auto name = state.locset_defs[locset].name;
         auto open = gui_tree_add(fmt::format("{} {}", icon_locset, name), [&](){ state.add_stimulus(locset); });
         if (open) {
-          std::vector<float> values(state.sim.until/state.sim.dt, 0.0f);
           for (const auto& stim: state.stimuli.get_children(locset)) {
-            auto& data = state.stimuli[stim];
-            gui_stimulus(stim, data, state.events);
-            auto t = 0.0, u = 0.0;
-            auto envelope = data.envelope;
-            auto it = envelope.begin();
-            std::sort(envelope.begin(), envelope.end());
-            for (auto ix = 0; ix < values.size(); ++ix) {
-              auto t = ix*state.sim.dt;
-              if ((it != envelope.end()) && (t > it->first)) u = it++->second;
-              auto f = data.frequency ? std::sin(t*1e-3*data.frequency + data.phase) : 1.0f;
-              values[ix] += u*f;
-            }
+            gui_stimulus(stim, state.stimuli[stim], state.events, values, state.sim.dt, state.sim.until);
           }
-          ImGui::PlotLines("Preview", values.data(), values.size(), 0, nullptr, FLT_MAX, FLT_MAX, {0, 0});
           ImGui::TreePop();
         }
       }
@@ -861,12 +822,11 @@ namespace {
   }
 
   inline void gui_simulation(gui_state& state) {
-    ZoneScopedN(__FUNCTION__);
+
     if (ImGui::Begin(fmt::format("{} Simulation", icon_sim).c_str())) {
-      if (ImGui::Button(icon_start)) state.run_simulation();
-      gui_tooltip("Run Preview.");
       ImGui::Separator();
       gui_sim(state.sim);
+
       ImGui::Separator();
       gui_cv_policy(state.cv_policy_def, state.renderer.cv_boundaries, state.events);
       ImGui::Separator();
@@ -877,6 +837,11 @@ namespace {
       gui_detectors(state);
     }
     ImGui::End();
+
+    if(state.sim.should_run) {
+      state.run_simulation();
+      state.sim.should_run = false;
+    }
   }
 
   inline arb::cable_cell make_cable_cell(gui_state& state) {
@@ -890,6 +855,7 @@ namespace {
         arb::i_clamp i_clamp;
         i_clamp.frequency = item.frequency;
         i_clamp.phase     = item.phase;
+        std::sort(item.envelope.begin(), item.envelope.end());
         for (const auto& [t, i]: item.envelope) i_clamp.envelope.emplace_back(arb::i_clamp::envelope_point{t, i});
         decor.place(locset, i_clamp);
       }
@@ -904,6 +870,7 @@ namespace {
     if (param.Cm) decor.set_default(arb::membrane_capacitance{param.Cm.value()});
     if (param.TK) decor.set_default(arb::temperature_K{param.TK.value()});
     if (param.Vm) decor.set_default(arb::init_membrane_potential{param.Vm.value()});
+
     for (const auto& ion: state.ions) {
       const auto& data = state.ion_defaults[ion];
       const auto& name = state.ion_defs[ion].name;
@@ -912,9 +879,17 @@ namespace {
       } else if (data.method == "Nernst") {
         decor.set_default(arb::ion_reversal_potential_method{name, arb::mechanism_desc{fmt::format("default::nernst/{}", name)}});
       }
-      decor.set_default(arb::init_int_concentration{name, data.Xi});
-      decor.set_default(arb::init_ext_concentration{name, data.Xo});
-      decor.set_default(arb::init_reversal_potential{name, data.Er});
+
+      if (state.presets.ion_data.contains(name)) {
+        auto p = state.presets.ion_data.at(name);
+        decor.set_default(arb::init_int_concentration{name,  data.Xi.value_or(p.init_int_concentration.value())});
+        decor.set_default(arb::init_ext_concentration{name,  data.Xo.value_or(p.init_ext_concentration.value())});
+        decor.set_default(arb::init_reversal_potential{name, data.Er.value_or(p.init_reversal_potential.value())});
+      } else {
+        decor.set_default(arb::init_int_concentration{name,  data.Xi.value()});
+        decor.set_default(arb::init_ext_concentration{name,  data.Xo.value()});
+        decor.set_default(arb::init_reversal_potential{name, data.Er.value()});
+      }
     }
 
     for (const auto& id: state.regions) {
@@ -953,14 +928,62 @@ namespace {
     return {state.builder.morph, state.builder.labels, decor};
   }
 
+  void gui_traces(gui_state& state) {
+    if (ImGui::Begin("Traces")) {
+      static std::optional<id_type> to_plot;
+      if (to_plot) {
+        auto probe = to_plot.value();
+        auto trace = state.sim.traces.at(probe);
+        auto probe_def = state.probes[probe];
+        auto var = fmt::format("{} {}", probe_def.kind, probe_def.variable);
+
+        if (ImPlot::BeginPlot(fmt::format("Probe {} @ branch {} ({})", probe.value, trace.branch, trace.location).c_str(),
+                              "Time (ms)",
+                              var.c_str(),
+                              ImVec2(-1, -20),
+                              ImPlotFlags_NoLegend,
+                              ImPlotAxisFlags_AutoFit,
+                              ImPlotAxisFlags_AutoFit)) {
+          ImPlot::PlotLine(var.c_str(), trace.times.data(), trace.values.data(), trace.values.size());
+          ImPlot::EndPlot();
+        }
+      } else {
+        if (ImPlot::BeginPlot("Please select a probe below",
+                              "Time (ms)",
+                              "Unknown",
+                              ImVec2(-1, -20),
+                              ImPlotFlags_NoLegend,
+                              ImPlotAxisFlags_AutoFit,
+                              ImPlotAxisFlags_AutoFit)) {
+          ImPlot::EndPlot();
+        }
+      }
+      for (const auto& locset: state.locsets) {
+        with_id id{locset};
+        auto locset_def = state.locset_defs[locset];
+        if (gui_tree(fmt::format("{} {}", icon_locset, locset_def.name))) {
+          for (const auto& probe: state.probes.get_children(locset)) {
+            const auto& data = state.probes[probe];
+            if(ImGui::RadioButton(fmt::format("{} {}: {} {}", icon_probe, probe.value, data.kind, data.variable).c_str(),
+                                  to_plot && (to_plot.value() == probe))) {
+              to_plot = probe;
+            }
+          }
+          ImGui::TreePop();
+        }
+      }
+    }
+    ImGui::End();
+  }
 } // namespace
 
 void gui_state::gui() {
-  ZoneScopedN(__FUNCTION__);
+
   update();
   gui_main(*this);
   gui_locations(*this);
   gui_cell(*this);
+  gui_traces(*this);
   gui_cell_info(*this);
   gui_parameters(*this);
   gui_simulation(*this);
@@ -1139,7 +1162,7 @@ void gui_state::deserialize(const std::filesystem::path& fn) {
 gui_state::gui_state(): builder{} { reset(); }
 
 void gui_state::reset() {
-  ZoneScopedN(__FUNCTION__);
+
   locsets.clear();
   regions.clear();
   locset_defs.clear();
@@ -1157,7 +1180,7 @@ void gui_state::reset() {
 }
 
 void gui_state::reload(const io::loaded_morphology& result) {
-  ZoneScopedN(__FUNCTION__);
+
   reset();
   builder = cell_builder{result.morph};
   renderer.load_geometry(result.morph);
@@ -1168,7 +1191,6 @@ void gui_state::reload(const io::loaded_morphology& result) {
 }
 
 void gui_state::update() {
-  ZoneScopedN("gui_state::update()");
   struct event_visitor {
     gui_state* state;
 
@@ -1188,7 +1210,7 @@ void gui_state::update() {
       }
     }
     void operator()(const evt_add_locdef<ls_def>& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto ls = state->locsets.add();
       state->locset_defs.add(ls, {c.name.empty() ? fmt::format("Locset {}", ls.value) : c.name, c.definition});
       state->renderer.locsets.add(ls);
@@ -1196,7 +1218,7 @@ void gui_state::update() {
       state->update_locset(ls);
     }
     void operator()(const evt_upd_locdef<ls_def>& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto& def = state->locset_defs[c.id];
       auto& rnd = state->renderer.locsets[c.id];
       def.update();
@@ -1212,7 +1234,7 @@ void gui_state::update() {
       state->builder.make_label_dict(state->locset_defs.items, state->region_defs.items);
     }
     void operator()(const evt_del_locdef<ls_def>& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto id = c.id;
       log_debug("Erasing locset {}", id.value);
       state->renderer.locsets.del(id);
@@ -1223,7 +1245,7 @@ void gui_state::update() {
       state->builder.make_label_dict(state->locset_defs.items, state->region_defs.items);
     }
     void operator()(const evt_add_locdef<rg_def>& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto id = state->regions.add();
       state->region_defs.add(id, {c.name.empty() ? fmt::format("Region {}", id.value) : c.name, c.definition});
       state->parameter_defs.add(id);
@@ -1233,7 +1255,7 @@ void gui_state::update() {
       state->update_region(id);
     }
     void operator()(const evt_upd_locdef<rg_def>& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto& def = state->region_defs[c.id];
       auto& rnd = state->renderer.regions[c.id];
       for(auto& [segment, regions]: state->segment_to_regions) {
@@ -1258,7 +1280,7 @@ void gui_state::update() {
       state->builder.make_label_dict(state->locset_defs.items, state->region_defs.items);
     }
     void operator()(const evt_del_locdef<rg_def>& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto id = c.id;
       state->renderer.regions.del(id);
       state->region_defs.del(id);
@@ -1271,28 +1293,28 @@ void gui_state::update() {
       state->builder.make_label_dict(state->locset_defs.items, state->region_defs.items);
     }
     void operator()(const evt_add_ion& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto id = state->ions.add();
       state->ion_defs.add(id, {c.name.empty() ? fmt::format("Ion {}", id.value) : c.name, c.charge});
       state->ion_defaults.add(id);
       for (const auto& region: state->regions) state->ion_par_defs.add(region, id);
     }
     void operator()(const evt_del_ion& c) {
-      ZoneScopedN(__FUNCTION__);
+
       auto id = c.id;
       state->ion_defs.del(id);
       state->ion_defaults.del(id);
       state->ion_par_defs.del_by_2nd(id);
       state->ions.del(id);
     }
-    void operator()(const evt_add_mechanism& c) { ZoneScopedN(__FUNCTION__); state->mechanisms.add(c.region); }
-    void operator()(const evt_del_mechanism& c) { ZoneScopedN(__FUNCTION__); state->mechanisms.del(c.id); }
-    void operator()(const evt_add_detector& c)  { ZoneScopedN(__FUNCTION__); state->detectors.add(c.locset); }
-    void operator()(const evt_del_detector& c)  { ZoneScopedN(__FUNCTION__); state->detectors.del(c.id); }
-    void operator()(const evt_add_probe& c)     { ZoneScopedN(__FUNCTION__); state->probes.add(c.locset); }
-    void operator()(const evt_del_probe& c)     { ZoneScopedN(__FUNCTION__); state->probes.del(c.id); }
-    void operator()(const evt_add_stimulus& c)  { ZoneScopedN(__FUNCTION__); state->stimuli.add(c.locset); }
-    void operator()(const evt_del_stimulus& c)  { ZoneScopedN(__FUNCTION__); state->stimuli.del(c.id); }
+    void operator()(const evt_add_mechanism& c) {  state->mechanisms.add(c.region); }
+    void operator()(const evt_del_mechanism& c) {  state->mechanisms.del(c.id); }
+    void operator()(const evt_add_detector& c)  {  state->detectors.add(c.locset); }
+    void operator()(const evt_del_detector& c)  {  state->detectors.del(c.id); }
+    void operator()(const evt_add_probe& c)     {  state->probes.add(c.locset); }
+    void operator()(const evt_del_probe& c)     {  state->probes.del(c.id); }
+    void operator()(const evt_add_stimulus& c)  {  state->stimuli.add(c.locset); }
+    void operator()(const evt_del_stimulus& c)  {  state->stimuli.del(c.id); }
   };
 
   while (!events.empty()) {
@@ -1324,15 +1346,34 @@ void gui_state::run_simulation() {
 
   auto prop  = arb::cable_cell_global_properties{};
   prop.default_parameters = presets;
+  if (parameter_defaults.TK) prop.default_parameters.temperature_K           = parameter_defaults.TK;
+  if (parameter_defaults.RL) prop.default_parameters.axial_resistivity       = parameter_defaults.RL;
+  if (parameter_defaults.Cm) prop.default_parameters.membrane_capacitance    = parameter_defaults.Cm;
+  if (parameter_defaults.Vm) prop.default_parameters.init_membrane_potential = parameter_defaults.Vm;
 
   auto cat = arb::mechanism_catalogue{};
   for (const auto& [k, v]: catalogues) cat.import(v, k + "::");
   prop.catalogue = &cat;
 
   for (const auto& ion: ions) {
-    const auto& data     = ion_defs[ion];
-    const auto& def      = ion_defaults[ion];
-    prop.add_ion(data.name, data.charge, def.Xi, def.Xo, def.Er);
+    const auto& data   = ion_defs[ion];
+    const auto& def    = ion_defaults[ion];
+    const auto& name   = data.name;
+
+    if (presets.ion_data.contains(name)) {
+      auto p = presets.ion_data.at(name);
+      prop.add_ion(name,
+                   data.charge,
+                   def.Xi.value_or(p.init_int_concentration.value()),
+                   def.Xo.value_or(p.init_ext_concentration.value()),
+                   def.Er.value_or(p.init_reversal_potential.value()));
+    } else {
+      prop.add_ion(name,
+                   data.charge,
+                   def.Xi.value(),
+                   def.Xo.value(),
+                   def.Er.value());
+    }
   }
 
   auto rec = make_recipe(prop, cell);
