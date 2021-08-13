@@ -1,9 +1,17 @@
-cd ~/tmp
-curl -L -O "https://github.com/probonopd/linuxdeployqt/releases/download/7/linuxdeployqt-7-x86_64.AppImage"
-chmod a+x linuxdeployqt*.AppImage
-unset QTDIR
-unset QT_PLUGIN_PATH
-unset LD_LIBRARY_PATH
-./linuxdeployqt*.AppImage --appimage-extract-and-run ~/AppDir/share/applications/*.desktop -bundle-non-qt-libs -verbose=2
-./linuxdeployqt*.AppImage --appimage-extract-and-run ~/AppDir/share/applications/*.desktop -appimage -verbose=2
-cp arbor*.AppImage* /${GITHUB_WORKSPACE}/arbor-gui.AppImage
+if [ -z "$GITHUB_ACTIONS" ]; then CMAKECOMP=""; else CMAKECOMP="-DCMAKE_CXX_COMPILER=g++-10"; fi
+bld_dir=$(mktemp -d)
+app_dir=$(mktemp -d)
+tmp_dir=$(mktemp -d)
+cmake -S . -B $bld_dir "$CMAKECOMP" --install-prefix $app_dir/usr
+cmake --build $bld_dir -j 4
+cmake --install $bld_dir
+cd "$tmp_dir"
+wget https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+chmod +x linuxdeploy-x86_64.AppImage
+# if [ -z "$GITHUB_ACTIONS" ]; then ; else
+#     export ARCH=x86_64
+#     export UPDATE_INFORMATION="gh-releases-zsync|${GITHUB_REPOSITORY//\//|}|${VERSION:-"continuous"}|CPU-X-*$ARCH.AppImage.zsync"
+# fi
+./linuxdeploy-x86_64.AppImage --appdir "$app_dir" --output appimage
+rm ./linuxdeploy-x86_64.AppImage
+mv ./*.AppImage* "$HOME"
