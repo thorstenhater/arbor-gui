@@ -8,15 +8,23 @@ on:
 
 jobs:
   build-appimage:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-18.04
 
     steps:
+      - name: install dependencies
+        run: |
+          arch
+          apt update
+          apt install -y software-properties-common
+          add-apt-repository ppa:ubuntu-toolchain-r/test
+          apt install -y build-essential python3-pip libxml2-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev gcc-10 g++-10
+          pip3 install --upgrade pip cmake
+          update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
+          update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
       - name: "Clone w/ submodules"
         uses: actions/checkout@v2
         with:
           submodules: "recursive"
-      - name: Install missing packages
-        run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
       - name: Configure
         run: cmake -S . -B ~/buildag -DCMAKE_CXX_COMPILER=g++-10 --install-prefix ~/AppDir
       - name: Build
