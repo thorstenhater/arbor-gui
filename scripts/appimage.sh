@@ -1,3 +1,4 @@
+back_again=$(pwd)
 if [ -z "$GITHUB_ACTIONS" ]; then CMAKECOMP=""; else CMAKECOMP="-DCMAKE_CXX_COMPILER=g++-10"; fi
 bld_dir=$(mktemp -d)
 app_dir=$(mktemp -d)
@@ -14,4 +15,4 @@ chmod +x linuxdeploy-x86_64.AppImage
 # fi
 ./linuxdeploy-x86_64.AppImage --appdir "$app_dir" --output appimage
 rm ./linuxdeploy-x86_64.AppImage
-mv ./*.AppImage* "$HOME"
+mv ./*.AppImage* "$back_again"
