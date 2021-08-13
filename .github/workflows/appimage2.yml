@@ -1,0 +1,42 @@
+name: AppImage
+
+on:
+  push:
+    branches: [ master, appimage ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-appimage:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Clone w/ submodules"
+        uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+      - name: Install missing packages
+        run: sudo apt install libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev
+      - name: Configure
+        run: cmake -S . -B ~/buildag -DCMAKE_CXX_COMPILER=g++-10 --install-prefix ~/AppDir
+      - name: Build
+        run: cmake --build ~/buildag -j 4
+      - name: Install
+        run: cmake --install ~/buildag
+      - name: AppImage
+        run: |
+        cd ~/tmp
+        curl -L -O "https://github.com/probonopd/linuxdeployqt/releases/download/7/linuxdeployqt-7-x86_64.AppImage"
+        chmod a+x linuxdeployqt*.AppImage
+        unset QTDIR
+        unset QT_PLUGIN_PATH
+        unset LD_LIBRARY_PATH
+        ./linuxdeployqt*.AppImage --appimage-extract-and-run ~/AppDir/share/applications/*.desktop -bundle-non-qt-libs -verbose=2
+        ./linuxdeployqt*.AppImage --appimage-extract-and-run ~/AppDir/share/applications/*.desktop -appimage -verbose=2
+        cp *.AppImage* /${GITHUB_WORKSPACE}/arbor-gui.AppImage
+        ls -l /${GITHUB_WORKSPACE}/arbor-gui.AppImage
+      - uses: actions/upload-artifact@v2
+        with:
+          name: AppImage
+          path: './*.AppImage*'
+
