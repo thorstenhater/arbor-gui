@@ -149,7 +149,7 @@ their Windows machine and use X11-forwarding to display the GUI.
 2.  Add the following to `.bashrc`. Please note that it is similar
     but not identical to snippets you\'ll find elsewhere:
     ```bash
-    export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2\>/dev/null):0 
+    export DISPLAY=$(awk '/nameserver / {print $2; exit}' /etc/resolv.conf 2\>/dev/null):0
     export LIBGL_ALWAYS_INDIRECT=0
     export MESA_GL_VERSION_OVERRIDE=3.3
     ```
@@ -162,7 +162,7 @@ and Catalina using this line
 
 ```bash
 cmake .. -DCMAKE_CXX_COMPILER=/usr/local/opt/llvm/bin/clang++ \
-         -DCMAKE_CCOMPILER=/usr/local/opt/llvm/bin/clang      \
+         -DCMAKE_C_COMPILER=/usr/local/opt/llvm/bin/clang      \
          -DCMAKE_BUILD_TYPE=release
 ```
 # Acknowledgements
