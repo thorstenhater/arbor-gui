@@ -13,7 +13,7 @@ std::filesystem::path get_resource_path(const std::filesystem::path& fn) {
 #ifdef ARBORGUI_RESOURCES_BASE
   //if in appimage. Can only be known at runtime
   if(const char *APPDIR = std::getenv("APPDIR"); nullptr != APPDIR){
-    return std::filesystem::path{ std::string(APPDIR) } / "usr/share/arbor-gui" / fn;;
+    return std::filesystem::path{ std::string(APPDIR) } / "usr/share/arbor-gui" / fn;
   } else {
     return ARBORGUI_RESOURCES_BASE / fn;
   }
