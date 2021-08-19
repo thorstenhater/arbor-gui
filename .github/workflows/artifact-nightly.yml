@@ -74,4 +74,5 @@ jobs:
           omitBody: true
           draft: false
           prerelease: true
-          artifacts: *.dmg, *.AppImage
+          artifacts: '*.dmg', '*.AppImage'
+          
