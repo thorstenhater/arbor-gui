@@ -1,0 +1,77 @@
+name: AppImage
+
+on:
+  push:
+    # branches: [ master ]
+    tags:
+      - v*
+  schedule:
+    - cron: '0 2 * * *' # run at 2 AM UTC
+  # pull_request:
+  #   branches: [ master ]
+
+jobs:
+  build-appimage:
+    name: "Make AppImage"
+    runs-on: ubuntu-18.04
+    steps:
+      - name: install dependencies
+        run: |
+          sudo apt install -y software-properties-common
+          sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+          sudo apt install -y build-essential python3-pip libxml2-dev libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libglu1-mesa-dev freeglut3-dev mesa-common-dev gcc-10 g++-10
+          sudo pip3 install --upgrade pip cmake
+          sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-10 10
+          sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-10 10
+      - name: "Clone w/ submodules"
+        uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+      - name: Make AppImage
+        run: sh ./scripts/appimage.sh
+      - uses: actions/upload-artifact@v2
+        with:
+          name: AppImage
+          path: './*.AppImage*'
+  build_diskim:
+    name: "Make Apple Disk Image"
+    runs-on: ${{ matrix.config.os }}
+    strategy:
+      matrix:
+        config:
+        - {
+            name: "MacOS 10",
+            os:   "macos-10.15",
+            cc:   "c",
+            cxx:  "clang++-10"
+          }
+    steps:
+      - name: "Clone w/ submodules"
+        uses: actions/checkout@v2
+        with:
+          submodules: "recursive"
+      - name: Configure
+        run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++ -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang -DARBORGUI_BUILD_BUNDLE=ON
+      - name: Build
+        run: cmake --build build --target package
+      - name: Upload .dmg
+        uses: actions/upload-artifact@v2
+        with:
+          name: arbor-gui.dmg
+          path: build/*.dmg
+  prerelease:
+    name: "Make Prerelease"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: ncipollo/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Nightly build ${{ github.ref }}
+          omitBody: true
+          draft: false
+          prerelease: true
+          artifacts: *.dmg, *.AppImage
