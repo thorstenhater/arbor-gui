@@ -74,7 +74,7 @@ jobs:
           tag: ${{ github.ref }}
           name: Nightly build
           omitBody: true
-          draft: false
+          draft: true
           prerelease: true
           artifacts: '*.dmg,*.AppImage'
           token: ${{ secrets.GITHUB_TOKEN }}
