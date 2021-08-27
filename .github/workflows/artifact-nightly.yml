@@ -56,7 +56,7 @@ jobs:
 
   make_rel:
     name: Make Release
-    needs: 'build_diskim, build_appimage'
+    needs: [build_diskim, build_appimage]
     runs-on: ubuntu-latest
 
     steps:
