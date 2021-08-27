@@ -2,7 +2,7 @@ name: Nightly
 
 on:
   push:
-    # branches: [ master ]
+    branches: nightly_action
     tags:
       - v*
   schedule:
