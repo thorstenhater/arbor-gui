@@ -32,7 +32,7 @@ jobs:
         run: sh ./scripts/appimage.sh
       - uses: actions/upload-artifact@v2
         with:
-          name: AppImage
+          name: linux
           path: './*.AppImage*'
 
   build_diskim:
@@ -51,7 +51,7 @@ jobs:
       - name: Upload .dmg
         uses: actions/upload-artifact@v2
         with:
-          name: arbor-gui.dmg
+          name: apple
           path: build/*.dmg
 
   make_rel:
@@ -64,12 +64,8 @@ jobs:
         uses: actions/download-artifact@v2
       - name: Move
         run: mv */* .
-      - name: Display structure of downloaded files
-        run: ls -R
       - name: "Make Release"
         uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag: ${{ github.ref }}
           name: Nightly build
