@@ -8,7 +8,7 @@ on:
 
 jobs:
   build_appimage:
-    name: "Make AppImage Nightly"
+    name: "Make Linux AppImage Nightly"
     runs-on: ubuntu-18.04
     steps:
       - name: install dependencies
@@ -60,8 +60,10 @@ jobs:
         run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: "Get artifacts"
         uses: actions/download-artifact@v2
-      - name: Move
-        run: mv */* .
+      - name: Move and rename appimage
+        run: mv */*.AppImage arbor-gui.AppImage
+      - name: Move and rename dmg
+        run: mv */*.dmg arbor-gui.dmg
       - name: "Make Release"
         uses: ncipollo/release-action@v1
         with:
