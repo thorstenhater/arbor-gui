@@ -11,7 +11,7 @@ on:
   #   branches: [ master ]
 
 jobs:
-  build-appimage:
+  build_appimage:
     name: "Make AppImage Nightly"
     runs-on: ubuntu-18.04
     steps:
@@ -35,31 +35,9 @@ jobs:
           name: AppImage
           path: './*.AppImage*'
 
-      - name: Make Release
-        uses: ncipollo/release-action@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
-        with:
-          tag: ${{ github.ref }}
-          name: Nightly build ${{ github.ref }}
-          omitBody: true
-          draft: false
-          prerelease: true
-          artifacts: '*.dmg,*.AppImage'
-          token: ${{ secrets.GITHUB_TOKEN }}
-
   build_diskim:
     name: "Make Apple Disk Image Nightly"
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      matrix:
-        config:
-        - {
-            name: "MacOS 10",
-            os:   "macos-10.15",
-            cc:   "c",
-            cxx:  "clang++-10"
-          }
+    runs-on: macos-10.15
     steps:
       - name: "Clone w/ submodules"
         uses: actions/checkout@v2
@@ -76,13 +54,25 @@ jobs:
           name: arbor-gui.dmg
           path: build/*.dmg
 
-      - name: Make Release
+  make_rel:
+    name: Make Release
+    needs: build_diskim, build_appimage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: "Get artifacts"
+        uses: actions/download-artifact@v2
+        with:
+          path: .
+      - name: Display structure of downloaded files
+        run: ls -R
+      - name: "Make Release"
         uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
           tag: ${{ github.ref }}
-          name: Nightly build ${{ github.ref }}
+          name: Nightly build
           omitBody: true
           draft: false
           prerelease: true
