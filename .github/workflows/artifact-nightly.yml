@@ -62,6 +62,8 @@ jobs:
     steps:
       - name: "Get artifacts"
         uses: actions/download-artifact@v2
+      - name: Move
+        run: mv */* .
       - name: Display structure of downloaded files
         run: ls -R
       - name: "Make Release"
