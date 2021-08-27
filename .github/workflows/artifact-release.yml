@@ -1,4 +1,4 @@
-name: AppImage
+name: Release
 
 on:
   push:
@@ -12,6 +12,7 @@ on:
 
 jobs:
   build-appimage:
+    name: "Release Linux Build"
     runs-on: ubuntu-18.04
     steps:
       - name: install dependencies
@@ -33,7 +34,7 @@ jobs:
           name: AppImage
           path: './*.AppImage*'
   build_diskim:
-    name: "Build on MacOS"
+    name: "Release MacOS Build"
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:

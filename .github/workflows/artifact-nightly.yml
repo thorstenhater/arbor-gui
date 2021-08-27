@@ -1,4 +1,4 @@
-name: AppImage
+name: Nightly
 
 on:
   push:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   build-appimage:
-    name: "Make AppImage"
+    name: "Make AppImage Nightly"
     runs-on: ubuntu-18.04
     steps:
       - name: install dependencies
@@ -34,7 +34,7 @@ jobs:
           name: AppImage
           path: './*.AppImage*'
   build_diskim:
-    name: "Make Apple Disk Image"
+    name: "Make Apple Disk Image Nightly"
     runs-on: ${{ matrix.config.os }}
     strategy:
       matrix:
@@ -60,7 +60,7 @@ jobs:
           name: arbor-gui.dmg
           path: build/*.dmg
   prerelease:
-    name: "Make Prerelease"
+    name: "Make Prerelease Nightly"
     runs-on: ubuntu-latest
     steps:
       - name: Create Release
