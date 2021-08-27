@@ -35,12 +35,13 @@ jobs:
           name: AppImage
           path: './*.AppImage*'
 
-      - uses: ncipollo/release-action@v1
+      - name: Make Release
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Nightly build ${{ github.ref }}
+          tag: ${{ github.ref }}
+          name: Nightly build ${{ github.ref }}
           omitBody: true
           draft: false
           prerelease: true
@@ -75,12 +76,13 @@ jobs:
           name: arbor-gui.dmg
           path: build/*.dmg
 
-      - uses: ncipollo/release-action@v1
+      - name: Make Release
+        uses: ncipollo/release-action@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
         with:
-          tag_name: ${{ github.ref }}
-          release_name: Nightly build ${{ github.ref }}
+          tag: ${{ github.ref }}
+          name: Nightly build ${{ github.ref }}
           omitBody: true
           draft: false
           prerelease: true
