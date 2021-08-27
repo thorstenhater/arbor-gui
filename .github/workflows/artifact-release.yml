@@ -2,17 +2,13 @@ name: Release
 
 on:
   push:
-    # branches: [ master ]
+    branches: [ master ]
     tags:
       - v*
-  schedule:
-    - cron: '0 2 * * *' # run at 2 AM UTC
-  # pull_request:
-  #   branches: [ master ]
 
 jobs:
-  build-appimage:
-    name: "Release Linux Build"
+  build_appimage:
+    name: "Make AppImage Nightly"
     runs-on: ubuntu-18.04
     steps:
       - name: install dependencies
@@ -26,30 +22,24 @@ jobs:
       - name: "Clone w/ submodules"
         uses: actions/checkout@v2
         with:
-          submodules: "recursive"
+          fetch-depth: 0
+          submodules: recursive
       - name: Make AppImage
         run: sh ./scripts/appimage.sh
       - uses: actions/upload-artifact@v2
         with:
-          name: AppImage
+          name: linux
           path: './*.AppImage*'
+
   build_diskim:
-    name: "Release MacOS Build"
-    runs-on: ${{ matrix.config.os }}
-    strategy:
-      matrix:
-        config:
-        - {
-            name: "MacOS 10",
-            os:   "macos-10.15",
-            cc:   "c",
-            cxx:  "clang++-10"
-          }
+    name: "Make Apple Disk Image Nightly"
+    runs-on: macos-10.15
     steps:
       - name: "Clone w/ submodules"
         uses: actions/checkout@v2
         with:
-          submodules: "recursive"
+          fetch-depth: 0
+          submodules: recursive
       - name: Configure
         run: cmake -S . -B build -DCMAKE_CXX_COMPILER=$(brew --prefix llvm)/bin/clang++ -DCMAKE_C_COMPILER=$(brew --prefix llvm)/bin/clang -DARBORGUI_BUILD_BUNDLE=ON
       - name: Build
@@ -57,5 +47,27 @@ jobs:
       - name: Upload .dmg
         uses: actions/upload-artifact@v2
         with:
-          name: arbor-gui.dmg
+          name: apple
           path: build/*.dmg
+
+  make_rel:
+    name: Make Release
+    needs: [build_diskim, build_appimage]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
+      - name: "Get artifacts"
+        uses: actions/download-artifact@v2
+      - name: Move
+        run: mv */* .
+      - name: "Make Release"
+        uses: ncipollo/release-action@v1
+        with:
+          omitBody: true
+          draft: true
+          prerelease: false
+          artifacts: '*.dmg,*.AppImage'
+          token: ${{ secrets.GITHUB_TOKEN }}
+          
