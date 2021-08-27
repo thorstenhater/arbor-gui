@@ -58,8 +58,10 @@ jobs:
     name: Make Release
     needs: [build_diskim, build_appimage]
     runs-on: ubuntu-latest
-
     steps:
+      - name: Get current date
+        id: date
+        run: echo "::set-output name=date::$(date +'%Y-%m-%d')"
       - name: "Get artifacts"
         uses: actions/download-artifact@v2
       - name: Move
@@ -67,10 +69,10 @@ jobs:
       - name: "Make Release"
         uses: ncipollo/release-action@v1
         with:
-          tag: ${{ github.ref }}
-          name: Nightly build
+          tag: nightly-tag-${{ steps.date.outputs.date }}
+          name: Nightly builds ${{ steps.date.outputs.date }}
           omitBody: true
-          draft: true
+          draft: false
           prerelease: true
           artifacts: '*.dmg,*.AppImage'
           token: ${{ secrets.GITHUB_TOKEN }}
